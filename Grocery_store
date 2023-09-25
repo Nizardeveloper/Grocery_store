@@ -13,4 +13,5 @@ Results:
 Concepts of ideas:
     1. Using Azure face api to detect the male or female.
     2. Using Azure person api to detect the person.
-    3. Using YOLO ore trained model, detecting the persons. 
+    3. Using YOLO pre trained model, detecting the persons. 
+    4. Using CCTV on roof of billing space and detecting the count of purchase.
