@@ -7,7 +7,6 @@ modelp=YOLO('person_detection.pt')
 modelf=YOLO('Face_detection.pt')
 modelc=YOLO('Gender_Classification.pt')
 
-triangle_pts = np.array([[0,100], [800, 100],[800,200],[0, 200]], dtype=np.int32)
 vid=cv.VideoCapture(r'people2.mp4')
 
 fps=vid.get(cv.CAP_PROP_FPS)
@@ -16,7 +15,6 @@ while True:
     ret , frame = vid.read()
     if not ret:
         break
-    cv.polylines(frame, [triangle_pts], isClosed=True, color=(255, 0, 0), thickness=2)
     p=modelp(frame)
     person=p[0].boxes.data.cpu().tolist()
     for per in  person:
@@ -24,10 +22,7 @@ while True:
         
         cv.rectangle(frame,(xm1,ym1),(xmx1,ymx1),(0,255,0),2)
     r=modelf(frame)
-    # face,con= cvl.detect_face(frame)
-    # for f , c in zip(face , con):
-    #     xm,ym,xmx,ymx= f[0],f[1],f[2],f[3]
-    #     cv.rectangle(frame,(xm,ym),(xmx,ymx),(0,255,0),2)
+    
     faces=r[0].boxes.data.cpu().tolist()
     for face in  faces:
         xm,ym,xmx,ymx= int(face[0]),int(face[1]),int(face[2]),int(face[3])
