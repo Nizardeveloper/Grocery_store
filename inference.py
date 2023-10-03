@@ -1,13 +1,13 @@
 from ultralytics import YOLO
 import cv2 as cv
-
 import numpy as np
 
 modelp=YOLO('person_detection.pt')
 modelf=YOLO('Face_detection.pt')
 modelc=YOLO('Gender_Classification.pt')
 
-vid=cv.VideoCapture(r'people2.mp4')
+# rtsp://admin:CCTV@123@192.168.29.2:554/Streaming/channels/001
+vid=cv.VideoCapture("rtsp://admin:CCTV@123@192.168.29.2:554/Streaming/channels/001")
 
 fps=vid.get(cv.CAP_PROP_FPS)
 fcount=0
