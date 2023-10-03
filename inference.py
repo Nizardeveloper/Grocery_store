@@ -2,8 +2,8 @@ from ultralytics import YOLO
 import cv2 as cv
 import numpy as np
 
-modelp=YOLO(r'c:\Users\india\Downloads\BFP_grocery_100n.pt')
-modelc=YOLO('Gender_Classification.pt')
+modelp=YOLO(r"D:\JSN\Grocery_store\Work_area\model\BFP_grocery_100n.pt")
+modelc=YOLO(r"D:\JSN\Grocery_store\Work_area\model\Gender_Classification.pt")
 
 vid=cv.VideoCapture(r'people2.mp4')
 
