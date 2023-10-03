@@ -2,12 +2,12 @@ from ultralytics import YOLO
 import cv2 as cv
 import numpy as np
 
-modelp=YOLO("D:\JSN\Grocery_store\Work_area\model\BFP_grocery_100n.pt")
-modelf=YOLO("D:\JSN\Grocery_store\Work_area\model\BFP_grocery_100n.pt")
-modelc=YOLO("D:\JSN\Grocery_store\Work_area\model\Gender_Classification.pt")
+modelp=YOLO('person_detection.pt')
+modelf=YOLO('Face_detection.pt')
+modelc=YOLO('Gender_Classification.pt')
 
 # rtsp://admin:CCTV@123@192.168.29.2:554/Streaming/channels/001
-vid=cv.VideoCapture("rtsp://admin:CCTV@123@192.168.29.2:554/Streaming/channels/202")
+vid=cv.VideoCapture("rtsp://admin:CCTV@123@192.168.29.2:554/Streaming/channels/001")
 
 fps=vid.get(cv.CAP_PROP_FPS)
 fcount=0
