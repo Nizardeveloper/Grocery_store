@@ -5,7 +5,7 @@ import numpy as np
 modelp=YOLO(r"D:\JSN\Grocery_store\Work_area\model\BFP_grocery_100n.pt")
 modelc=YOLO(r"D:\JSN\Grocery_store\Work_area\model\Gender_Classification.pt")
 
-vid=cv.VideoCapture(r'people2.mp4')
+vid=cv.VideoCapture("rtsp://admin:CCTV@123@192.168.29.2:554/Streaming/channels/202")
 
 fps=vid.get(cv.CAP_PROP_FPS)
 fcount=0
