@@ -2,10 +2,11 @@ from ultralytics import YOLO
 import cv2 as cv
 import numpy as np
 
-modelp=YOLO(r'c:\Users\india\Downloads\BFP_grocery_100n.pt')
-modelc=YOLO('Gender_Classification.pt')
-
-vid=cv.VideoCapture(r'c:\Users\india\Downloads\samp2.mp4')
+modelp=YOLO(r"d:\JSN\Grocery_store\Work_area\model\BFP_grocery_v2.pt")
+modelf=YOLO(r"D:\JSN\Grocery_store\Work_area\model\Face_detection.pt")
+modelc=YOLO(r"d:\JSN\Grocery_store\Work_area\model\Gender_Classification.pt")
+#cm=
+vid = cv.VideoCapture(r"d:\JSN\Grocery_store\Work_area\testing\samp1.mp4")
 
 fps=vid.get(cv.CAP_PROP_FPS)
 fcount=0
@@ -24,19 +25,22 @@ while True:
             name=p[0].names[int(per[-1])]
             cv.putText(frame,str(name),(xm1,ym1-10),cv.FONT_HERSHEY_PLAIN,1,(0,0,255),1)
 
-        cv.rectangle(frame,(xm1,ym1),(xmx1,ymx1),(0,255,0),2)
-    # r=modelp(frame)  
+            cv.rectangle(frame,(xm1,ym1),(xmx1,ymx1),(0,255,0),2)
+    r=modelf(frame)  
     
-    # faces=r[0].boxes.data.cpu().tolist()
-    # for face in  faces:
-    #     xm,ym,xmx,ymx= int(face[0]),int(face[1]),int(face[2]),int(face[3])
+    faces=r[0].boxes.data.cpu().tolist()
+    for face in  faces:
+        xm,ym,xmx,ymx= int(face[0]),int(face[1]),int(face[2]),int(face[3])
         
-    #     cv.rectangle(frame,(xm,ym),(xmx,ymx),(0,255,0),2)
-    #     crop=frame[ym:ymx,xm:xmx]
-    #     gen=modelc(crop)
-    #     index=gen[0].probs.top5[0]
-    #     val=gen[0].names[index]
-    #     cv.putText(frame,str(val),(xm,ym-10),cv.FONT_HERSHEY_PLAIN,1,(0,0,255),1)
+        cv.rectangle(frame,(xm,ym),(xmx,ymx),(0,255,0),2)
+        # names=r[0].names[int(face[-1])]
+        # cv.putText(frame,str(names),(xmx,ymx+10),cv.FONT_HERSHEY_PLAIN,1,(0,0,255),1)
+
+        crop=frame[ym:ymx,xm:xmx]
+        gen=modelc(crop)
+        index=gen[0].probs.top5[0]
+        val=gen[0].names[index]
+        cv.putText(frame,str(val),(xmx,ymx+10),cv.FONT_HERSHEY_PLAIN,1,(0,0,255),1)
     cv.imshow('hj',frame)
     d=int(1000/fps)  
     k=cv.waitKey(1)
