@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import cv2 as cv
 import numpy as np
 
-modelp=YOLO(r"D:\JSN\Grocery_store\Work_area\model\BFP_grocery_100n.pt")
+modelp=YOLO(r"D:\JSN\Grocery_store\Work_area\model\last.pt")
 modelc=YOLO(r"D:\JSN\Grocery_store\Work_area\model\Gender_Classification.pt")
 
 vid=cv.VideoCapture("rtsp://admin:CCTV@123@192.168.29.2:554/Streaming/channels/202")
