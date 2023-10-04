@@ -3,7 +3,7 @@ import cv2 as cv
 import numpy as np
 
 modelp=YOLO('yolov8n.pt')
-modelc=YOLO(r'd:\JSN\Grocery_store\Work_area\model\Gender_Classification.pt')
+modelc=YOLO('Gender_Classification.pt')
 
 # vid = cv.VideoCapture("rtsp://admin:CCTV@123@192.168.29.2:554/Streaming/channels/202")
 
