@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import cv2
 import numpy as np
+import datetime
 
 
 
@@ -12,6 +13,8 @@ class Customer_Analysis:
         self.gender = YOLO(model_gender)
 
 
-    def Analysis():
-        pass
+    def Analysis(self,frames, debug=False):
+        result = self.person.predict(source=frames, show=True)
+        print(result)
 
+    
