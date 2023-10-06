@@ -19,16 +19,7 @@ def Retail_store_customer_analysis():
     data = request.get_json(force=True)
     
     if data["cam"] != "":
-        try:
-            cam_footage = cv2.VideoCapture(data["cam"])
-            
+        Json_outputs = Analysis_models.Analysis(data["cam"])
+        return Json_outputs
 
-
-        
-        except:
-            return "Error Occured"
-    
-    else:
-        return "No Camera Footage Found"
-            
 

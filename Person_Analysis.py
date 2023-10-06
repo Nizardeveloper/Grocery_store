@@ -13,8 +13,17 @@ class Customer_Analysis:
         self.gender = YOLO(model_gender)
 
 
-    def Analysis(self,frames, debug=False):
-        result = self.person.predict(source=frames, show=True)
-        print(result[0].boxes.data.cpu().tolist())
+    def Analysis(self,cam_url, debug=False):
+
+        video = cv2.VideoCapture(cam_url)
+
+        while True:
+            _, frame = video.read()
+
+            cv2.imshow("svf", frame)
+            if cv2.waitKey(20) == 27:
+                break
+        cv2.destroyAllWindows()
+        return cam_url
 
     
