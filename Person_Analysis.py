@@ -15,6 +15,6 @@ class Customer_Analysis:
 
     def Analysis(self,frames, debug=False):
         result = self.person.predict(source=frames, show=True)
-        print(result)
+        print(result[0].boxes.data.cpu().tolist())
 
     

@@ -5,6 +5,9 @@ import cv2
 # Cam2 = 202, cam3 = 302, cam4 = 402
 video = cv2.VideoCapture("http://192.168.29.205:8080/video")
 
+fps = video.get(cv2.CAP_PROP_FPS)
+print(fps)
+
 while True:
 
     _,frame = video.read()
