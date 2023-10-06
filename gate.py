@@ -34,4 +34,6 @@ def Retail_store_customer_analysis():
         payload = json.dumps(Json_outputs)
         response = requests.request("POST", url, headers=headers, data=payload)
 
+        return response.text
+
 
