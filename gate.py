@@ -20,20 +20,25 @@ def Retail_store_customer_analysis():
     data = request.get_json(force=True)
     
     if data["cam"] != "":
-        Json_outputs = Analysis_models.Analysis(data["cam"])
-        # return Json_outputs
-    
-        url = "https://vchekservicedemoapp.azurewebsites.net/v1/PersonAnalytics"
-
-        headers = {
-                    'apikey': '415d1f410a424a4ba0e6925991db57b2',
-                    'Content-Type': 'application/json',
-                    'Cookie': 'ARRAffinity=79e06db539acb57119e709978d2cf1da299e8341753d6f6345007fcab3f69bc5; ARRAffinitySameSite=79e06db539acb57119e709978d2cf1da299e8341753d6f6345007fcab3f69bc5'
-                    }
+        try:
+            Json_outputs = Analysis_models.Analysis(data["cam"])
+            # return Json_outputs
         
-        payload = json.dumps(Json_outputs)
-        response = requests.request("POST", url, headers=headers, data=payload)
+            url = "https://vchekservicedemoapp.azurewebsites.net/v1/PersonAnalytics"
 
-        return response.text
+            headers = {
+                        'apikey': '415d1f410a424a4ba0e6925991db57b2',
+                        'Content-Type': 'application/json',
+                        'Cookie': 'ARRAffinity=79e06db539acb57119e709978d2cf1da299e8341753d6f6345007fcab3f69bc5; ARRAffinitySameSite=79e06db539acb57119e709978d2cf1da299e8341753d6f6345007fcab3f69bc5'
+                        }
+            
+            payload = json.dumps(Json_outputs)
+            response = requests.request("POST", url, headers=headers, data=payload)
+
+            return response.text
+        except:
+            return "Server Isssue"
+    else:
+        return "No Camera footage found"
 
 
