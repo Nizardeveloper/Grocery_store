@@ -10,10 +10,10 @@ headers = {
            }
 
 
-Person_detection_model = r"d:\JSN\Grocery_store\Work_area\model\yolov8n.pt"
-Bag_detection_model = r"d:\JSN\Grocery_store\Work_area\model\Bag_Person_100n.pt"
-Face_detection_model = r"d:\JSN\Grocery_store\Work_area\model\yolov8n-face.pt"
-Gender_classification_model = r"d:\JSN\Grocery_store\Work_area\model\Gender_Classification.pt"
+Person_detection_model = r"yolov8n_person.pt"
+Bag_detection_model = r"Bag_100n.pt"
+Face_detection_model = r"yolov8n-face.pt"
+Gender_classification_model = r"Gender_Classification.pt"
 
 
 Analysis_models = Customer_Analysis(Person_detection_model,Bag_detection_model,Face_detection_model,Gender_classification_model,url,headers)
