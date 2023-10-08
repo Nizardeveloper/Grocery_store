@@ -1,4 +1,4 @@
-from Person_Analysis import *
+from Retail_strore_customer_analysis import *
 
 cam_path = r"c:\Users\NISAR\Downloads\phn_4.mp4"
 
