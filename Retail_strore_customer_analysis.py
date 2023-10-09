@@ -22,7 +22,7 @@ class Customer_Analysis:
 
 
     def Analysis(self,cam_url, debug=False):
-
+        global result4
         object_tracker = DeepSort(max_age=10,
                 n_init=2,
                 nms_max_overlap=1.0,
@@ -172,21 +172,15 @@ class Customer_Analysis:
                 Customer_Analysis.response(self,data=out)
 
             if len(exiting)==cus_out:
-                out['data']['isPersonIn']=0
-                if len(purchase_count)==pur_val:
-                    out['data']['isBagAvailable']=1
-                    pur_val+=1
-                out['data']['detectedDateTime']=str(datetime.datetime.now())
-                cus_out+=1
-                Customer_Analysis.response(self,data=out)
+                if result4<=0 and len(exiting)==cus_out:
+                    out['data']['isPersonIn']=0
+                    if len(purchase_count)==pur_val:
+                        out['data']['isBagAvailable']=1
+                        pur_val+=1
+                    out['data']['detectedDateTime']=str(datetime.datetime.now())
+                    cus_out+=1
+                    Customer_Analysis.response(self,data=out)
                 
-
-            print(len(exiting),cus_out,sep='\n\n')
-            cv2.putText(frame,str('Enter: ')+str(len(entering)),(10,10),cv2.FONT_HERSHEY_COMPLEX,(0.5),(0,255,255),2)
-            cv2.putText(frame,str('Exit: ')+str(len(exiting)),(10,30),cv2.FONT_HERSHEY_COMPLEX,(0.5),(0,255,255),2)
-            cv2.putText(frame,str('Male: ')+str(len(male_count)),(10,50),cv2.FONT_HERSHEY_COMPLEX,(0.5),(0,255,255),2)
-            cv2.putText(frame,str('Female: ')+str(len(female_count)),(10,70),cv2.FONT_HERSHEY_COMPLEX,(0.5),(0,255,255),2)
-            cv2.putText(frame,str('Purchased: ')+str(len(purchase_count)),(10,90),cv2.FONT_HERSHEY_COMPLEX,(0.5),(0,255,255),2)
             cv2.imshow("RGB", frame)
             if cv2.waitKey(1)&0xFF==27:
                 break
