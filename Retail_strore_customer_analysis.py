@@ -20,13 +20,11 @@ class Customer_Analysis:
         requests.request("POST", self.url, headers=self.headers, data=payload)
 
 
-
     def Analysis(self,cam_url, debug=False):
-        global result4
         object_tracker = DeepSort(max_age=10,
                 n_init=2,
-                nms_max_overlap=1.0,
-                max_cosine_distance=0.2,
+                nms_max_overlap=0.7,
+                max_cosine_distance=0.3,
                 nn_budget=None,
                 override_track_class=None,
                 embedder="mobilenet",
@@ -73,23 +71,20 @@ class Customer_Analysis:
                       }
                 }
 
-            if not len(purchase_count)==pur_val-1:
-                pur_val=len(purchase_count)+1
-
             ret,frame = cap.read()
             if not ret:
                 break
             frame_copy=frame.copy()
-
+  
             results_person=self.person.predict(frame_copy)
             person=results_person[0].boxes.data.cpu().tolist()
             predicted_list=[]
+
             if  person!=[]:
                 for val in person:
                     if val[-1]==0.0:
                         val[-1]=2.0
                         predicted_list.append(val)
-
 
             list=[]
             for predictions in predicted_list:
@@ -101,20 +96,22 @@ class Customer_Analysis:
                 if d==2:
                     list.append(([pxm,pym,pxmx-pxm,pymx-pym],predictions[4],class_list[d]))
 
-
-            tracks = object_tracker.update_tracks(list, frame=frame)
+            tracks = object_tracker.update_tracks(list, frame=frame_copy) 
             for track in tracks:
                 if not track.is_confirmed():
                     continue
                 id = track.track_id
-                bbox = track.to_ltrb()
+                ltrb = track.to_ltrb()
+                bbox = ltrb
                 txm = int(bbox[0])
                 tym = int(bbox[1])
                 txmx = int(bbox[2])
                 tymx = int(bbox[3])
+
+
+                    ########ENTERING
+
                 result=cv2.pointPolygonTest(np.array(area1,np.int32),(txm,tymx),False)
-
-
                 if result>=0:
                     people_entering[id]=(txmx,tymx)
                 if id in people_entering:
@@ -125,7 +122,7 @@ class Customer_Analysis:
                         for face in  faces:
                             fxm,fym,fxmx,fymx= int(face[0]),int(face[1]),int(face[2]),int(face[3])
                             crop=frame_copy[fym:fymx,fxm:fxmx]
-                            gender=self.gender(crop)
+                            gender=self.gender.predict(crop)
                             index=gender[0].probs.top5[0]
                             val=gender[0].names[index]
                             people_entering[id]=val
@@ -138,7 +135,7 @@ class Customer_Analysis:
                             female_count.add(female)
 
 
-                        ####Exit
+                        ####Exiting
 
                 result3=cv2.pointPolygonTest(np.array(area2,np.int32),(txmx,tymx),False)
                 if result3>=0:
@@ -150,17 +147,14 @@ class Customer_Analysis:
                         bag=results_bag[0].boxes.data.cpu().tolist()
                         for b in  bag:
                             xm,ym,xmx,ymx= int(b[0]),int(b[1]),int(b[2]),int(b[3])
-
                             area3=[(txm,tym),(txmx,tym),(txmx,tymx),(txm,tymx)]
-                            result5=cv2.pointPolygonTest(np.array(area3,np.int32),(xmx,ymx),False)
-
+                            result5=cv2.pointPolygonTest(np.array(area3,np.int32),(xmx,ym),False)
                             if result5>=0:
                                 purchase='p'+id
                                 purchase_count.add(purchase)
                         exiting.add(id)
 
-            if len(entering)==cus_in:
-            
+            if len(entering)==cus_in:  
                 if len(male_count)==male_in:
                     out['data']['gender']="Male"
                     male_in+=1
@@ -171,6 +165,7 @@ class Customer_Analysis:
                 cus_in+=1
                 Customer_Analysis.response(self,data=out)
 
+
             if len(exiting)==cus_out:
                 if result4<=0 and len(exiting)==cus_out:
                     out['data']['isPersonIn']=0
@@ -180,13 +175,9 @@ class Customer_Analysis:
                     out['data']['detectedDateTime']=str(datetime.datetime.now())
                     cus_out+=1
                     Customer_Analysis.response(self,data=out)
-                
-            cv2.imshow("RGB", frame)
-            if cv2.waitKey(1)&0xFF==27:
-                break
-            
-        cap.release()
-        cv2.destroyAllWindows()
+
+
+
 
 
 
