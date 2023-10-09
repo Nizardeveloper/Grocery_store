@@ -1,6 +1,6 @@
 from Retail_strore_customer_analysis import *
 
-cam_path = r"c:\Users\NISAR\Downloads\phn_4.mp4"
+cam_path = r"c:\Users\NISAR\Downloads\WhatsApp Video 2023-10-09 at 12.51.35 PM.mp4"
 
 url = "https://vchekservicedemoapp.azurewebsites.net/v1/PersonAnalytics"
 
