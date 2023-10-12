@@ -7,20 +7,26 @@ import requests
 import json
 
 class Customer_Analysis:
-    def __init__(self, model_person, model_bag, model_face, model_gender,Api_url, headers):
+    def __init__(self, model_person, model_bag,Db_Api_url, Db_headers,Cv_Api_url,Cv_headers):
         self.person = YOLO(model_person)
         self.bag = YOLO(model_bag)
-        self.face = YOLO(model_face)
-        self.gender = YOLO(model_gender)
-        self.url = Api_url
-        self.headers = headers
+        self.database_url = Db_Api_url
+        self.database_headers = Db_headers
+        self.cv_url=Cv_Api_url
+        self.cv_headers=Cv_headers
 
-    def response(self,data):
+    def send_response(self,data):
         payload = json.dumps(data)
-        requests.request("POST", self.url, headers=self.headers, data=payload)
+        requests.request("POST", self.database_url, headers=self.database_headers, data=payload)
 
 
-    def Analysis(self,cam_url, debug=False):
+    def Get_gender(self,img):
+        payload=cv2.imencode('.jpg', img)[1].tobytes()
+        response = requests.request("POST", self.cv_url, headers=self.cv_headers, data=payload)
+        return response.json()["predictions"][0]['tagName']
+
+
+    def Analysis(self,cam_url,roi_area1,roi_area2 ,debug=False):
         object_tracker = DeepSort(max_age=10,
                 n_init=2,
                 nms_max_overlap=0.7,
@@ -37,11 +43,7 @@ class Customer_Analysis:
                 today=None)
         
 
-        area1=[(397,331),(423,328),(382,479),(351,479)]
-        area2=[(451,317),(484,315),(477,479),(428,479)]
         cap = cv2.VideoCapture(cam_url)
-        class_list = ['Bag','Face','Person']
-
         cus_in=1
         cus_out=1
         male_in=1
@@ -54,6 +56,8 @@ class Customer_Analysis:
         people_exit={}
         exiting=set()
         entering=set()
+        gender_added=set()
+
         
 
         while True:   
@@ -94,7 +98,7 @@ class Customer_Analysis:
                 pymx=int(predictions[3])
                 d=int(predictions[5])
                 if d==2:
-                    list.append(([pxm,pym,pxmx-pxm,pymx-pym],predictions[4],class_list[d]))
+                    list.append(([pxm,pym,pxmx-pxm,pymx-pym],predictions[4],'Person'))
 
             tracks = object_tracker.update_tracks(list, frame=frame_copy) 
             for track in tracks:
@@ -110,48 +114,45 @@ class Customer_Analysis:
 
 
                     ########ENTERING
-
-                result=cv2.pointPolygonTest(np.array(area1,np.int32),(txm,tymx),False)
+                area3=[(txm,tym),(txmx,tym),(txmx,tymx),(txm,tymx)]
+                result=cv2.pointPolygonTest(np.array(roi_area1,np.int32),(txm,tymx),False)
                 if result>=0:
                     people_entering[id]=(txmx,tymx)
                 if id in people_entering:
-                    result1=cv2.pointPolygonTest(np.array(area2,np.int32),(txm,tymx),False)
+                    result1=cv2.pointPolygonTest(np.array(roi_area2,np.int32),(txm,tymx),False)
                     if result1>=0:
-                        results_face=self.face.predict(frame_copy)
-                        faces=results_face[0].boxes.data.cpu().tolist()
-                        for face in  faces:
-                            fxm,fym,fxmx,fymx= int(face[0]),int(face[1]),int(face[2]),int(face[3])
-                            crop=frame_copy[fym:fymx,fxm:fxmx]
-                            gender=self.gender.predict(crop)
-                            index=gender[0].probs.top5[0]
-                            val=gender[0].names[index]
-                            people_entering[id]=val
+                        crop=frame_copy[tym:tymx,txm:txmx]
                         entering.add(id)
-                        if people_entering[id]=='Male':
-                            male='m'+id
-                            male_count.add(male)
-                        elif people_entering[id]=='Female':
-                            female='f'+id
-                            female_count.add(female)
+                        if id in entering:
+                            if id not in gender_added:
+                                gender=Customer_Analysis.Get_gender(self,crop)
+                                people_entering[id]=gender
+                                gender_added.add(id)
+                    if people_entering[id]=='Male':
+                        male='m'+id
+                        male_count.add(male)
+                    elif people_entering[id]=='Female':
+                        female='f'+id
+                        female_count.add(female)
 
 
                         ####Exiting
 
-                result3=cv2.pointPolygonTest(np.array(area2,np.int32),(txmx,tymx),False)
+                result3=cv2.pointPolygonTest(np.array(roi_area2,np.int32),(txmx,tymx),False)
                 if result3>=0:
                     people_exit[id]=(txmx,tymx)
                 if id in people_exit:
-                    result4=cv2.pointPolygonTest(np.array(area1,np.int32),(txmx,tymx),False)
+                    result4=cv2.pointPolygonTest(np.array(roi_area1,np.int32),(txmx,tymx),False)
                     if result4>=0:
                         results_bag=self.bag.predict(frame_copy)
                         bag=results_bag[0].boxes.data.cpu().tolist()
                         for b in  bag:
                             xm,ym,xmx,ymx= int(b[0]),int(b[1]),int(b[2]),int(b[3])
-                            area3=[(txm,tym),(txmx,tym),(txmx,tymx),(txm,tymx)]
-                            result5=cv2.pointPolygonTest(np.array(area3,np.int32),(xmx,ym),False)
-                            if result5>=0:
-                                purchase='p'+id
-                                purchase_count.add(purchase)
+                            if int(b[-1])==0:
+                                result5=cv2.pointPolygonTest(np.array(area3,np.int32),(xmx,ym),False)
+                                if result5>=0:
+                                    purchase='p'+id
+                                    purchase_count.add(purchase)
                         exiting.add(id)
 
             if len(entering)==cus_in:  
@@ -163,7 +164,7 @@ class Customer_Analysis:
                     female_in+=1
                 out['data']['detectedDateTime']=str(datetime.datetime.now())
                 cus_in+=1
-                Customer_Analysis.response(self,data=out)
+                Customer_Analysis.send_response(self,data=out)
 
 
             if len(exiting)==cus_out:
@@ -174,9 +175,14 @@ class Customer_Analysis:
                         pur_val+=1
                     out['data']['detectedDateTime']=str(datetime.datetime.now())
                     cus_out+=1
-                    Customer_Analysis.response(self,data=out)
+                    Customer_Analysis.send_response(self,data=out)
 
-
+            cv2.imshow('cvgh',frame)
+            k=cv2.waitKey(1)
+            if k!=-1:
+                break
+        cap.release()
+        cv2.destroyAllWindows()
 
 
 
