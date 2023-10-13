@@ -1,10 +1,22 @@
-# Grocery_store
+# RETAIL STORE CUSTOMER ANALYSIS
 A concept of finding total counts of customers, their gender and purchasing status.
 
 
-Requirements:
+RETAIL STORE CUSTOMER ANALYSIS - POC 
+------------------------------------------------------------------
 
-    1. To find the count of customers in and exit of the grocery store using CCTV live footage.
-    2. To find the gender of the customer labels as (Male, Female, Children).
-    3. To find the number of customers did purchase.
+Concpets and ideas on project
+------------------------------
+
+Results:
+    1. How many people came in and went out of the store.
+    2. How many male customers and female in customers entered in.
+    3. How many of customers did purchased.
+    4. Time stamp of the customer while enterin in and going out.
+
+
+Models Used:
+    1. Yolo pre-trained model for detecting persons.
+    2. Yolo custom model for Bag detection.
+    3. Azure Custom vision classification model for Gender classification.
     
