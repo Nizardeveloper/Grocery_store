@@ -1,0 +1,5 @@
+outs:
+- md5: 4f6fb3ad9d15d595e68e91d1cd89591c
+  size: 6250606
+  hash: md5
+  path: Bag_100n.pt
